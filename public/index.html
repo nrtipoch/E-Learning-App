@@ -21,55 +21,201 @@
         </div>
         
         <div class="dashboard-grid">
-            <!-- Knowledge Assessment Card -->
+            <!-- YouTube Search Card -->
             <div class="card">
-                <h3>📊 การวัดระดับความรู้</h3>
-                <form id="assessmentForm">
+                <h3>🚀 การพัฒนาทักษะ</h3>
+                <form id="youtubeSearchForm">
                     <div class="input-group">
-                        <label>ชื่อผู้เรียน</label>
-                        <input type="text" id="userName" name="userName" placeholder="กรุณากรอกชื่อ" required>
+                        <label>ทักษะที่ต้องการเรียนรู้:</label>
+                        <input type="text" id="searchInput" name="query" placeholder="ป้อนคำค้นหา..." required>
                     </div>
-                    <div class="input-group">
-                        <label>ข้อมูลการศึกษา(สาขาวิชา)</label>
-                        <select id="fieldOfInterest" name="fieldOfInterest" required>
-                            <option value="">เลือกสาขา</option>
-                            <option value="Engineering">วิศวกรรมศาสตร์</option>
-                            <option value="design">สถาปัตยกรรม</option>
-                            <option value="marketing">บริหารธุรกิจ</option>
-                            <option value="science">วิทยาศาสตร์</option>
-                            <option value="Information Technology">เทคโนโลยีสารสนเทศ</option>
-                            <option value="humanities">มนุษยศาสตร์</option>
-                            <option value="liberal arts">ศิลปศาสตร์</option>
-                            <option value="Agriculture">เกษตรศาสตร์</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>ตำแหน่งงานที่สนใจ:</label>
-                        <input type="text" id="work" name="work" placeholder="เช่น Graphic Designer, Engineering, science Medical">
-                    </div>
-                    <div class="input-group">
-                        <label>หัวข้อที่ต้องการประเมิน:</label>
-                        <input type="text" id="assessmentTopic" name="assessmentTopic" placeholder="เช่น science, Microbiology, Genetics Engineering" required>
-                    </div>
-                    <div class="input-group">
-                        <label>ระดับความรู้ปัจจุบัน:</label>
-                        <select id="currentLevel" name="currentLevel" required>
-                            <option value="beginner">เริ่มต้น</option>
-                            <option value="intermediate">กลาง</option>
-                            <option value="advanced">สูง</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn">ประเมินความรู้</button>
+                    <button type="submit" class="btn youtube-search-btn">🔍 ค้นหาคลิป YouTube</button>
                 </form>
                 
-                <div id="assessmentResult" style="margin-top: 20px; display: none;">
-                    <h4>ผลการประเมิน:</h4>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="knowledgeProgress" style="width: 0%"></div>
+                <div id="youtubeResults" style="margin-top: 20px;">
+                    <p class="no-results">ค้นหาทักษะที่ต้องการเรียนรู้</p>
+                </div>
+            </div>
+
+            <!-- AI Quiz Generator Card -->
+            <div class="card">
+                <h3>🎓 สร้างแบบทดสอบอัตโนมัติ</h3>
+                
+                <!-- Subject Form -->
+                <div id="subjectForm" class="section">
+                    <form id="quizGenerationForm">
+                        <div class="input-group">
+                            <label for="subjectName">📚 ชื่อวิชา:</label>
+                            <input type="text" id="subjectName" name="subjectName" placeholder="เช่น คณิตศาสตร์, ฟิสิกส์, ประวัติศาสตร์" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="subjectLevel">ระดับการศึกษา:</label>
+                            <select id="subjectLevel" name="subjectLevel" required>
+                                <option value="มัธยมศึกษาตอนปลาย">มัธยมศึกษาตอนปลาย</option>
+                                <option value="ปริญญาตรี" selected>ปริญญาตรี</option>
+                                <option value="ปริญญาโท">ปริญญาโท</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="topicDetails">หัวข้อเฉพาะ หรือเนื้อหาที่ต้องการทดสอบ:</label>
+                            <textarea id="topicDetails" name="topicDetails" placeholder="อธิบายหัวข้อหรือเนื้อหาที่ต้องการให้ AI สร้างคำถาม เช่น สมการกำลังสอง, สงครามโลกครั้งที่ 2, ไวยากรณ์ภาษาอังกฤษ" required></textarea>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="questionCount">จำนวนข้อสอบ:</label>
+                            <select id="questionCount" name="questionCount">
+                                <option value="5">5 ข้อ</option>
+                                <option value="10" selected>10 ข้อ</option>
+                                <option value="15">15 ข้อ</option>
+                                <option value="20">20 ข้อ</option>
+                                <option value="50">50 ข้อ</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="difficulty">ระดับความยาก:</label>
+                            <select id="difficulty" name="difficulty">
+                                <option value="ง่าย">ง่าย</option>
+                                <option value="ปานกลาง" selected>ปานกลาง</option>
+                                <option value="ยาก">ยาก</option>
+                            </select>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap;">
+                            <button type="submit" class="btn" style="background: linear-gradient(135deg, #a55eea 0%, #20b2aa 100%);">🤖 สร้างด้วย AI Gemini</button>
+                        </div>
+                    </form>
+                    
+                    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px; flex-wrap: wrap;">
+                        <button class="btn" onclick="showStatistics()" style="background: linear-gradient(135deg, #a55eea 0%, #26de81 100%); font-size: 14px; padding: 10px 20px;">📊 ดูสถิติ</button>
+                        <button class="btn" onclick="testGeminiConnection()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); font-size: 14px; padding: 10px 20px;">🔧 ทดสอบ API</button>
                     </div>
-                    <div id="knowledgeScore"></div>
-                    <div id="recommendations"></div>
+                </div>
+
+                <!-- Loading Section -->
+                <div id="loadingSection" class="section loading" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <h3>กำลังสร้างแบบทดสอบ...</h3>
+                    <p>AI กำลังวิเคราะห์เนื้อหาและสร้างคำถามสำหรับคุณ</p>
+                </div>
+
+                <!-- Quiz Section -->
+                <div id="quizSection" class="quiz-container" style="display: none;">
+                    <div class="section">
+                        <h2 id="quizTitle">📝 แบบทดสอบ</h2>
+                        <div id="quizContent">
+                            <!-- คำถามจะถูกสร้างที่นี่ -->
+                        </div>
+                        <div style="text-align: center; margin-top: 30px;">
+                            <button class="btn" onclick="submitQuiz()" style="background: linear-gradient(135deg, #a55eea 0%, #20b2aa 100%); margin-top: 10px;">📝 ส่งคำตอบ</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Section -->
+                <div id="resultSection" class="result-container" style="display: none;">
+                    <div class="section">
+                        <div class="score-display">
+                            <h2 id="scoreDisplay">0/0</h2>
+                            <p id="scoreText">คะแนนของคุณ</p>
+                        </div>
+                        
+                        <div id="answerReview">
+                            <!-- รายละเอียดเฉลยจะแสดงที่นี่ -->
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: 30px;">
+                            <button class="btn" onclick="startOver()">📚 สร้างแบบทดสอบใหม่</button>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <!--
+            <!-- Job Market Analysis Card -->
+            <div class="card">
+                <h3>💼 การวิเคราะห์ตลาดแรงงาน</h3>
+                <form id="jobMarketForm">
+                    <div class="input-group">
+                        <label>ประเทศ:</label>
+                        <select id="country" name="country" required>
+                            <option value="Thailand">ไทย</option>
+                            <option value="Singapore">สิงคโปร์</option>
+                            <option value="Japan">ญี่ปุ่น</option>
+                            <option value="United States">สหรัฐอเมริกา</option>
+                            <option value="Germany">เยอรมนี</option>
+                            <option value="United Kingdom">สหราชอาณาจักร</option>
+                            <option value="Australia">ออสเตรเลีย</option>
+                            <option value="Canada">แคนาดา</option>
+                            <option value="South Korea">เกาหลีใต้</option>
+                            <option value="China">จีน</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>สาขาอุตสาหกรรม:</label>
+                        <select id="industry" name="industry" required>
+                            <option value="technology">เทคโนโลยี</option>
+                            <option value="finance">การเงิน</option>
+                            <option value="healthcare">สาธารณสุข</option>
+                            <option value="manufacturing">การผลิต</option>
+                            <option value="Biochemistry">ชีวเคมี</option>
+                            <option value="Physics">ฟิสิกส์</option>
+                            <option value="Engineering">วิศวกรรมศาสตร์</option>
+                            <option value="Computer Science">วิทยาการคอมพิวเตอร์</option>
+                            <option value="Medical Sciences">วิทยาศาสตร์การแพทย์</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">วิเคราะห์ความต้องการแรงงาน</button>
+                </form>
+                
+                <div id="jobAnalysis" style="margin-top: 20px;"></div>
+            </div>
+        </div>
+        
+        <!-- Analytics Dashboard -->
+        <div class="card">
+            <h3>📈 Dashboard Analytics</h3>
+            <div class="chart-container">
+                <canvas id="skillChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Innovation Section -->
+        <div class="innovation-section">
+            <div class="innovation-icon">🌍</div>
+            <div class="innovation-title">Global Innovation & Technology</div>
+            <div class="innovation-subtitle">นวัตกรรมและเทคโนโลยีโลก พร้อมการวิเคราะห์ด้วย AI</div>
+            
+            <div class="tech-stats">
+                <div class="stat-item">
+                    <div class="stat-value">$5.2T</div>
+                    <div class="stat-label">ตลาดเทคโนโลยีโลก</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">10</div>
+                    <div class="stat-label">สาขาหลัก</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">+31%</div>
+                    <div class="stat-label">การเติบโตเฉลี่ย</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">1,347</div>
+                    <div class="stat-label">บริษัท Unicorn</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p>กำลังประมวลผล...</p>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>
