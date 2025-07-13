@@ -3,31 +3,378 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบ E-Learning Dashboard</title>
+    <title>E-Learning Platform</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.0/axios.min.js"></script>
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="icon" href="/assets/favicon.ico">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Kanit', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2em;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .input-group input, 
+        .input-group select, 
+        .input-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .input-group input:focus, 
+        .input-group select:focus, 
+        .input-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .progress-bar {
+            background: #e2e8f0;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #48bb78, #38a169);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        .video-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            border: 1px solid #e9ecef;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .video-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .video-item img {
+            width: 180px;
+            height: 101px;
+            min-width: 180px;
+            margin-right: 20px;
+            border-radius: 6px;
+            object-fit: cover;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .job-demand {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            margin: 10px 0;
+            background: #f7fafc;
+            border-radius: 10px;
+            transition: transform 0.2s ease;
+        }
+        
+        .job-demand:hover {
+            transform: translateX(5px);
+        }
+        
+        .demand-high { border-left: 4px solid #48bb78; }
+        .demand-medium { border-left: 4px solid #ed8936; }
+        .demand-low { border-left: 4px solid #e53e3e; }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+            font-style: italic;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .no-results {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 20px;
+            border: 2px dashed #ced4da;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+            margin: 15px 0;
+        }
+        
+        .innovation-section {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .innovation-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+        
+        .innovation-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .innovation-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 25px;
+        }
+        
+        .tech-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .video-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .video-item img {
+                width: 100%;
+                height: auto;
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .tech-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tech-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <div align="center">
-                <h1>🎓 E-Learning Platform</h1>
-            </div>
-            <div align="center">
-                <p>PAC Academic Center วัดระดับความรู้ เพิ่มทักษะ และติดตามความต้องการแรงงาน</p>
-            </div>
+            <h1>🎓 E-Learning Platform</h1>
+            <p>PAC Academic Center วัดระดับความรู้ เพิ่มทักษะ และติดตามความต้องการแรงงาน</p>
         </div>
         
         <div class="dashboard-grid">
+            <!-- Knowledge Assessment Card -->
+            <div class="card">
+                <h3>📊 การวัดระดับความรู้</h3>
+                <form id="assessmentForm">
+                    <div class="input-group">
+                        <label>ชื่อผู้เรียน</label>
+                        <input type="text" id="userName" placeholder="กรุณากรอกชื่อ" required>
+                    </div>
+                    <div class="input-group">
+                        <label>ข้อมูลการศึกษา(สาขาวิชา)</label>
+                        <select id="fieldOfInterest" required>
+                            <option value="">เลือกสาขา</option>
+                            <option value="Engineering">วิศวกรรมศาสตร์</option>
+                            <option value="design">สถาปัตยกรรม</option>
+                            <option value="marketing">บริหารธุรกิจ</option>
+                            <option value="science">วิทยาศาสตร์</option>
+                            <option value="Information Technology">เทคโนโลยีสารสนเทศ</option>
+                            <option value="humanities">มนุษยศาสตร์</option>
+                            <option value="liberal arts">ศิลปศาสตร์</option>
+                            <option value="Agriculture">เกษตรศาสตร์</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>ตำแหน่งงานที่สนใจ:</label>
+                        <input type="text" id="work" placeholder="เช่น Graphic Designer, Engineering, science Medical">
+                    </div>
+                    <div class="input-group">
+                        <label>หัวข้อที่ต้องการประเมิน:</label>
+                        <input type="text" id="assessmentTopic" placeholder="เช่น science, Microbiology, Genetics Engineering" required>
+                    </div>
+                    <div class="input-group">
+                        <label>ระดับความรู้ปัจจุบัน:</label>
+                        <select id="currentLevel" required>
+                            <option value="beginner">เริ่มต้น</option>
+                            <option value="intermediate">กลาง</option>
+                            <option value="advanced">สูง</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">ประเมินความรู้</button>
+                </form>
+                
+                <div id="assessmentResult" style="margin-top: 20px; display: none;">
+                    <h4>ผลการประเมิน:</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="knowledgeProgress" style="width: 0%"></div>
+                    </div>
+                    <div id="knowledgeScore"></div>
+                    <div id="recommendations"></div>
+                </div>
+            </div>
+            
             <!-- YouTube Search Card -->
             <div class="card">
                 <h3>🚀 การพัฒนาทักษะ</h3>
                 <form id="youtubeSearchForm">
                     <div class="input-group">
                         <label>ทักษะที่ต้องการเรียนรู้:</label>
-                        <input type="text" id="searchInput" name="query" placeholder="ป้อนคำค้นหา..." required>
+                        <input type="text" id="searchInput" placeholder="ป้อนคำค้นหา..." required>
                     </div>
                     <button type="submit" class="btn youtube-search-btn">🔍 ค้นหาคลิป YouTube</button>
                 </form>
@@ -37,109 +384,13 @@
                 </div>
             </div>
 
-            <!-- AI Quiz Generator Card -->
-            <div class="card">
-                <h3>🎓 สร้างแบบทดสอบอัตโนมัติ</h3>
-                
-                <!-- Subject Form -->
-                <div id="subjectForm" class="section">
-                    <form id="quizGenerationForm">
-                        <div class="input-group">
-                            <label for="subjectName">📚 ชื่อวิชา:</label>
-                            <input type="text" id="subjectName" name="subjectName" placeholder="เช่น คณิตศาสตร์, ฟิสิกส์, ประวัติศาสตร์" required>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="subjectLevel">ระดับการศึกษา:</label>
-                            <select id="subjectLevel" name="subjectLevel" required>
-                                <option value="มัธยมศึกษาตอนปลาย">มัธยมศึกษาตอนปลาย</option>
-                                <option value="ปริญญาตรี" selected>ปริญญาตรี</option>
-                                <option value="ปริญญาโท">ปริญญาโท</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="topicDetails">หัวข้อเฉพาะ หรือเนื้อหาที่ต้องการทดสอบ:</label>
-                            <textarea id="topicDetails" name="topicDetails" placeholder="อธิบายหัวข้อหรือเนื้อหาที่ต้องการให้ AI สร้างคำถาม เช่น สมการกำลังสอง, สงครามโลกครั้งที่ 2, ไวยากรณ์ภาษาอังกฤษ" required></textarea>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="questionCount">จำนวนข้อสอบ:</label>
-                            <select id="questionCount" name="questionCount">
-                                <option value="5">5 ข้อ</option>
-                                <option value="10" selected>10 ข้อ</option>
-                                <option value="15">15 ข้อ</option>
-                                <option value="20">20 ข้อ</option>
-                                <option value="50">50 ข้อ</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="difficulty">ระดับความยาก:</label>
-                            <select id="difficulty" name="difficulty">
-                                <option value="ง่าย">ง่าย</option>
-                                <option value="ปานกลาง" selected>ปานกลาง</option>
-                                <option value="ยาก">ยาก</option>
-                            </select>
-                        </div>
-
-                        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap;">
-                            <button type="submit" class="btn" style="background: linear-gradient(135deg, #a55eea 0%, #20b2aa 100%);">🤖 สร้างด้วย AI Gemini</button>
-                        </div>
-                    </form>
-                    
-                    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px; flex-wrap: wrap;">
-                        <button class="btn" onclick="showStatistics()" style="background: linear-gradient(135deg, #a55eea 0%, #26de81 100%); font-size: 14px; padding: 10px 20px;">📊 ดูสถิติ</button>
-                        <button class="btn" onclick="testGeminiConnection()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); font-size: 14px; padding: 10px 20px;">🔧 ทดสอบ API</button>
-                    </div>
-                </div>
-
-                <!-- Loading Section -->
-                <div id="loadingSection" class="section loading" style="display: none;">
-                    <div class="loading-spinner"></div>
-                    <h3>กำลังสร้างแบบทดสอบ...</h3>
-                    <p>AI กำลังวิเคราะห์เนื้อหาและสร้างคำถามสำหรับคุณ</p>
-                </div>
-
-                <!-- Quiz Section -->
-                <div id="quizSection" class="quiz-container" style="display: none;">
-                    <div class="section">
-                        <h2 id="quizTitle">📝 แบบทดสอบ</h2>
-                        <div id="quizContent">
-                            <!-- คำถามจะถูกสร้างที่นี่ -->
-                        </div>
-                        <div style="text-align: center; margin-top: 30px;">
-                            <button class="btn" onclick="submitQuiz()" style="background: linear-gradient(135deg, #a55eea 0%, #20b2aa 100%); margin-top: 10px;">📝 ส่งคำตอบ</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Result Section -->
-                <div id="resultSection" class="result-container" style="display: none;">
-                    <div class="section">
-                        <div class="score-display">
-                            <h2 id="scoreDisplay">0/0</h2>
-                            <p id="scoreText">คะแนนของคุณ</p>
-                        </div>
-                        
-                        <div id="answerReview">
-                            <!-- รายละเอียดเฉลยจะแสดงที่นี่ -->
-                        </div>
-                        
-                        <div style="text-align: center; margin-top: 30px;">
-                            <button class="btn" onclick="startOver()">📚 สร้างแบบทดสอบใหม่</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
             <!-- Job Market Analysis Card -->
             <div class="card">
                 <h3>💼 การวิเคราะห์ตลาดแรงงาน</h3>
                 <form id="jobMarketForm">
                     <div class="input-group">
                         <label>ประเทศ:</label>
-                        <select id="country" name="country" required>
+                        <select id="country" required>
                             <option value="Thailand">ไทย</option>
                             <option value="Singapore">สิงคโปร์</option>
                             <option value="Japan">ญี่ปุ่น</option>
@@ -154,7 +405,7 @@
                     </div>
                     <div class="input-group">
                         <label>สาขาอุตสาหกรรม:</label>
-                        <select id="industry" name="industry" required>
+                        <select id="industry" required>
                             <option value="technology">เทคโนโลยี</option>
                             <option value="finance">การเงิน</option>
                             <option value="healthcare">สาธารณสุข</option>
@@ -208,14 +459,206 @@
         </div>
     </div>
 
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
-        <div class="loading-content">
-            <div class="loading-spinner"></div>
-            <p>กำลังประมวลผล...</p>
-        </div>
-    </div>
+    <script>
+        // Mock API base URL for demo
+        const API_BASE = 'https://api.demo.com';
 
-    <script src="/js/app.js"></script>
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            initChart();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Assessment form
+            document.getElementById('assessmentForm').addEventListener('submit', handleAssessmentSubmit);
+            
+            // YouTube search form
+            document.getElementById('youtubeSearchForm').addEventListener('submit', handleYouTubeSearch);
+            
+            // Job market form
+            document.getElementById('jobMarketForm').addEventListener('submit', handleJobMarketAnalysis);
+        }
+
+        async function handleAssessmentSubmit(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            // Mock assessment
+            const score = Math.floor(Math.random() * 40) + 60;
+            const recommendations = [
+                `เริ่มต้นศึกษา ${data.assessmentTopic} ในระดับ${data.currentLevel}`,
+                'ฝึกทำโปรเจคเพื่อเสริมสร้างประสบการณ์',
+                'เข้าร่วมชุมชนออนไลน์เพื่อแลกเปลี่ยนความรู้'
+            ];
+            
+            displayAssessmentResult(score, recommendations);
+        }
+
+        function displayAssessmentResult(score, recommendations) {
+            const resultDiv = document.getElementById('assessmentResult');
+            const progressBar = document.getElementById('knowledgeProgress');
+            const scoreDiv = document.getElementById('knowledgeScore');
+            const recommendationsDiv = document.getElementById('recommendations');
+            
+            resultDiv.style.display = 'block';
+            
+            progressBar.style.width = score + '%';
+            scoreDiv.innerHTML = `<strong>คะแนน: ${score}/100</strong>`;
+            
+            recommendationsDiv.innerHTML = `
+                <h5>คำแนะนำ:</h5>
+                <ul>
+                    ${recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                </ul>
+            `;
+        }
+
+        async function handleYouTubeSearch(event) {
+            event.preventDefault();
+            
+            const query = document.getElementById('searchInput').value.trim();
+            const resultsDiv = document.getElementById('youtubeResults');
+            
+            if (!query) {
+                resultsDiv.innerHTML = '<p class="no-results">กรุณาใส่คำค้นหา</p>';
+                return;
+            }
+            
+            resultsDiv.innerHTML = '<div class="loading"><div class="loading-spinner"></div>กำลังค้นหา...</div>';
+            
+            // Mock YouTube results
+            setTimeout(() => {
+                const videos = Array.from({ length: 3 }, (_, i) => ({
+                    title: `${query} - บทเรียนที่ ${i + 1}`,
+                    url: `https://youtube.com/watch?v=sample${i + 1}`,
+                    thumbnail: `https://via.placeholder.com/180x101?text=Video+${i + 1}`
+                }));
+                
+                displayYouTubeResults(videos, query);
+            }, 1000);
+        }
+
+        function displayYouTubeResults(videos, query) {
+            const resultsDiv = document.getElementById('youtubeResults');
+            
+            let html = `<h4>📺 พบ ${videos.length} วิดีโอสำหรับ "${query}"</h4>`;
+            
+            videos.forEach(video => {
+                html += `
+                    <div class="video-item">
+                        <img src="${video.thumbnail}" alt="${video.title}">
+                        <div class="video-details">
+                            <h4>${video.title}</h4>
+                            <a href="${video.url}" target="_blank">ดูบน YouTube</a>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        async function handleJobMarketAnalysis(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            const analysisDiv = document.getElementById('jobAnalysis');
+            analysisDiv.innerHTML = '<div class="loading"><div class="loading-spinner"></div>กำลังวิเคราะห์ตลาดแรงงาน...</div>';
+            
+            // Mock job market data
+            setTimeout(() => {
+                const jobs = [
+                    { position: 'Software Developer', salary: '40K-80K', demand: 'high', demandText: 'สูง' },
+                    { position: 'Data Scientist', salary: '50K-100K', demand: 'high', demandText: 'สูง' },
+                    { position: 'UX Designer', salary: '35K-70K', demand: 'medium', demandText: 'ปานกลาง' }
+                ];
+                
+                displayJobAnalysis(jobs, data.country, data.industry);
+            }, 1500);
+        }
+
+        function displayJobAnalysis(jobs, country, industry) {
+            const analysisDiv = document.getElementById('jobAnalysis');
+            
+            let html = `<h4>💼 ความต้องการแรงงานใน${country} - ${industry}</h4>`;
+            
+            jobs.forEach(job => {
+                html += `
+                    <div class="job-demand demand-${job.demand}">
+                        <div>
+                            <strong>${job.position}</strong><br>
+                            <small>เงินเดือนเฉลี่ย: ${job.salary}</small>
+                        </div>
+                        <div>
+                            <span class="demand-level">${job.demandText}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            analysisDiv.innerHTML = html;
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('skillChart');
+            if (!ctx) return;
+            
+            const chartCtx = ctx.getContext('2d');
+            
+            new Chart(chartCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Engineering', 'Design', 'Science', 'Marketing', 'Agriculture'],
+                    datasets: [{
+                        label: 'ระดับทักษะปัจจุบัน',
+                        data: [85, 70, 60, 45, 35],
+                        backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                        borderColor: 'rgba(102, 126, 234, 1)',
+                        borderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            pointLabels: {
+                                color: '#333',
+                                font: {
+                                    size: 11
+                                }
+                            },
+                            ticks: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#333',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
 </body>
 </html>
