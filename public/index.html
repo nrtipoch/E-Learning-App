@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบ E-Learning Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.0/axios.min.js"></script>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" href="/assets/favicon.ico">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div align="center">
+                <h1>🎓 E-Learning Platform</h1>
+            </div>
+            <div align="center">
+                <p>PAC Academic Center วัดระดับความรู้ เพิ่มทักษะ และติดตามความต้องการแรงงาน</p>
+            </div>
+        </div>
+        
+        <div class="dashboard-grid">
+            <!-- Knowledge Assessment Card -->
+            <div class="card">
+                <h3>📊 การวัดระดับความรู้</h3>
+                <form id="assessmentForm">
+                    <div class="input-group">
+                        <label>ชื่อผู้เรียน</label>
+                        <input type="text" id="userName" name="userName" placeholder="กรุณากรอกชื่อ" required>
+                    </div>
+                    <div class="input-group">
+                        <label>ข้อมูลการศึกษา(สาขาวิชา)</label>
+                        <select id="fieldOfInterest" name="fieldOfInterest" required>
+                            <option value="">เลือกสาขา</option>
+                            <option value="Engineering">วิศวกรรมศาสตร์</option>
+                            <option value="design">สถาปัตยกรรม</option>
+                            <option value="marketing">บริหารธุรกิจ</option>
+                            <option value="science">วิทยาศาสตร์</option>
+                            <option value="Information Technology">เทคโนโลยีสารสนเทศ</option>
+                            <option value="humanities">มนุษยศาสตร์</option>
+                            <option value="liberal arts">ศิลปศาสตร์</option>
+                            <option value="Agriculture">เกษตรศาสตร์</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>ตำแหน่งงานที่สนใจ:</label>
+                        <input type="text" id="work" name="work" placeholder="เช่น Graphic Designer, Engineering, science Medical">
+                    </div>
+                    <div class="input-group">
+                        <label>หัวข้อที่ต้องการประเมิน:</label>
+                        <input type="text" id="assessmentTopic" name="assessmentTopic" placeholder="เช่น science, Microbiology, Genetics Engineering" required>
+                    </div>
+                    <div class="input-group">
+                        <label>ระดับความรู้ปัจจุบัน:</label>
+                        <select id="currentLevel" name="currentLevel" required>
+                            <option value="beginner">เริ่มต้น</option>
+                            <option value="intermediate">กลาง</option>
+                            <option value="advanced">สูง</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">ประเมินความรู้</button>
+                </form>
+                
+                <div id="assessmentResult" style="margin-top: 20px; display: none;">
+                    <h4>ผลการประเมิน:</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="knowledgeProgress" style="width: 0%"></div>
+                    </div>
+                    <div id="knowledgeScore"></div>
+                    <div id="recommendations"></div>
+                </div>
+            </div>
+            
+            <!--
