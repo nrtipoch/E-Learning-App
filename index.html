@@ -6,6 +6,26 @@
     <title>E-Learning Platform</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.0/axios.min.js"></script>
+    <!-- PWA Manifest -->
+<link rel="manifest" href="manifest.json">
+
+<!-- iOS Safari specific -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="E-Learning">
+<link rel="apple-touch-icon" href="assets/icon-152x152.png">
+
+<!-- Windows specific -->
+<meta name="msapplication-TileImage" content="assets/icon-144x144.png">
+<meta name="msapplication-TileColor" content="#667eea">
+
+<!-- General -->
+<meta name="theme-color" content="#764ba2">
+<meta name="color-scheme" content="light dark">
+
+<!-- Preload critical resources -->
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" as="style">
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js" as="script">
     <style>
         * {
             margin: 0;
@@ -310,6 +330,193 @@
     </style>
 </head>
 <body>
+    <!-- PWA Installation -->
+<script>
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(registration => {
+        console.log('SW registered: ', registration);
+        
+        // Check for updates
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              // New content available
+              showUpdateNotification();
+            }
+          });
+        });
+      })
+      .catch(registrationError => {
+        console.log('SW registration failed: ', registrationError);
+      });
+  });
+}
+
+// PWA Install prompt
+let deferredPrompt;
+const installButton = document.createElement('button');
+installButton.textContent = '📱 ติดตั้งแอป';
+installButton.className = 'btn install-btn';
+installButton.style.cssText = `
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: none;
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  border-radius: 50px;
+  padding: 12px 24px;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+  animation: pulse 2s infinite;
+`;
+
+// Add install button to page
+document.body.appendChild(installButton);
+
+// CSS for pulse animation
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+  
+  .install-btn:hover {
+    transform: scale(1.1) !important;
+    animation: none !important;
+  }
+`;
+document.head.appendChild(style);
+
+// Listen for install prompt
+window.addEventListener('beforeinstallprompt', (e) => {
+  console.log('PWA install prompt triggered');
+  e.preventDefault();
+  deferredPrompt = e;
+  installButton.style.display = 'block';
+});
+
+// Handle install button click
+installButton.addEventListener('click', async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`PWA install outcome: ${outcome}`);
+    
+    if (outcome === 'accepted') {
+      installButton.style.display = 'none';
+      showSuccessMessage('🎉 แอปถูกติดตั้งเรียบร้อยแล้ว!');
+    }
+    
+    deferredPrompt = null;
+  }
+});
+
+// Hide install button after successful installation
+window.addEventListener('appinstalled', () => {
+  console.log('PWA was installed');
+  installButton.style.display = 'none';
+  showSuccessMessage('🎉 ยินดีต้อนรับสู่ E-Learning App!');
+});
+
+// Check if app is already installed
+if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) {
+  console.log('PWA is running in standalone mode');
+  installButton.style.display = 'none';
+}
+
+// Show update notification
+function showUpdateNotification() {
+  const updateNotification = document.createElement('div');
+  updateNotification.innerHTML = `
+    <div style="
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #4CAF50;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      z-index: 10000;
+      text-align: center;
+    ">
+      <p style="margin: 0 0 10px 0;">🆕 มีการอัปเดตใหม่!</p>
+      <button onclick="updateApp()" style="
+        background: white;
+        color: #4CAF50;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+      ">อัปเดตเลย</button>
+      <button onclick="this.parentElement.parentElement.remove()" style="
+        background: transparent;
+        color: white;
+        border: 1px solid white;
+        padding: 8px 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-left: 10px;
+      ">ไว้ทีหลัง</button>
+    </div>
+  `;
+  document.body.appendChild(updateNotification);
+}
+
+// Update app
+function updateApp() {
+  if (navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+    window.location.reload();
+  }
+}
+
+// Show success message
+function showSuccessMessage(message) {
+  const successDiv = document.createElement('div');
+  successDiv.innerHTML = `
+    <div style="
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #4CAF50;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      z-index: 10000;
+      text-align: center;
+      animation: slideIn 0.3s ease;
+    ">
+      ${message}
+    </div>
+  `;
+  
+  document.body.appendChild(successDiv);
+  
+  setTimeout(() => {
+    successDiv.remove();
+  }, 3000);
+}
+
+// Network status monitoring
+window.addEventListener('online', () => {
+  showSuccessMessage('🌐 เชื่อมต่ออินเทอร์เน็ตแล้ว');
+});
+
+window.addEventListener('offline', () => {
+  showSuccessMessage('📱 กำลังใช้งานแบบออฟไลน์');
+});
+</script>
     <div class="container">
         <div class="header">
             <h1>🎓 E-Learning Platform</h1>
