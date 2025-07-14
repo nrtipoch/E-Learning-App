@@ -1,119 +1,16 @@
 {
-  "name": "E-Learning Platform - PAC Academic Center",
+  "name": "E-Learning Platform",
   "short_name": "E-Learning",
-  "description": "แพลตฟอร์ม E-Learning ที่ใช้ AI ในการสร้างแบบทดสอบและวิเคราะห์ความต้องการตลาดแรงงาน",
-  "start_url": "/E-Learning-App/",
+  "description": "PAC Academic Center",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#667eea",
-  "theme_color": "#764ba2",
-  "orientation": "portrait-primary",
-  "scope": "/E-Learning-App/",
-  "lang": "th",
-  "dir": "ltr",
-  "categories": ["education", "productivity", "utilities"],
-  "screenshots": [
-    {
-      "src": "assets/screenshot1.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "E-Learning Dashboard"
-    },
-    {
-      "src": "assets/screenshot2.png", 
-      "sizes": "750x1334",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Mobile Interface"
-    }
-  ],
+  "background_color": "#6366f1",
+  "theme_color": "#6366f1",
   "icons": [
     {
-      "src": "assets/icon-72x72.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "assets/icon-96x96.png",
-      "sizes": "96x96", 
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "assets/icon-128x128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "assets/icon-144x144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "assets/icon-152x152.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "assets/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "assets/icon-384x384.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "assets/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
     }
-  ],
-  "shortcuts": [
-    {
-      "name": "ประเมินความรู้",
-      "short_name": "ประเมิน",
-      "description": "เริ่มการประเมินความรู้",
-      "url": "/E-Learning-App/#assessment",
-      "icons": [
-        {
-          "src": "assets/shortcut-assessment.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "ค้นหาวิดีโอ",
-      "short_name": "YouTube", 
-      "description": "ค้นหาวิดีโอการเรียน",
-      "url": "/E-Learning-App/#youtube",
-      "icons": [
-        {
-          "src": "assets/shortcut-youtube.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "ตลาดแรงงาน",
-      "short_name": "งาน",
-      "description": "วิเคราะห์ตลาดแรงงาน", 
-      "url": "/E-Learning-App/#jobs",
-      "icons": [
-        {
-          "src": "assets/shortcut-jobs.png",
-          "sizes": "96x96"
-        }
-      ]
-    }
-  ],
-  "prefer_related_applications": false
+  ]
 }
